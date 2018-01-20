@@ -1,6 +1,6 @@
+from gui1.main_widget import MainWidget
 from PyQt5.QtWidgets import QApplication
 import sys
-from gui import MainWidget
 
 
 if __name__ == '__main__':
