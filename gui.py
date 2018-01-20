@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton, QGridLayout, QBoxLayout, QPushButton,
                              QTextEdit, QLineEdit, QCheckBox, QMessageBox)
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import (pyqtSlot, Qt)
 from TaskHandler import TasksHandler
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDropEvent
 
 
 class MainWidget(QWidget):
@@ -58,7 +58,7 @@ class MainWidget(QWidget):
             self.lastDialogWindow = None
             return
         self.taskHandlerThread.add_task(self.lastTask[0], kwargs)
-        self.taskList.addItem(self.lastTask[1])
+        self.taskList.addListEntry(self.lastTask[1])
         if self.lastDialogWindow:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
@@ -67,7 +67,7 @@ class MainWidget(QWidget):
     def onRemoveButtonClicked(self):
         index = self.taskList.currentRow()
         self.taskHandlerThread.remove_task(index)
-        self.taskList.takeItem(index)
+        self.taskList.removeListEntry(index)
 
     @pyqtSlot()
     def onCheckBoxChange(self):
@@ -145,16 +145,49 @@ class DialogAlerter(DialogWidget):
         return kwargs
 
 
+class ListEntry:
+    def __init__(self, name, id):
+        self.name = name
+        self.id = id
+        self.descr = ''''''
+
+    def __lt__(self, other):
+        return self.id < other.id
+
+
 class ListWidget(QListWidget):
     def __init__(self):
         super().__init__()
         self.initList()
+        self.entries = []
+        self.entries_count = 0
 
     def initList(self):
-        pass
+        from PyQt5.QtWidgets import QAbstractItemView
+        self.setDragDropMode(QAbstractItemView.InternalMove)
 
-    def addAction(self, name):
-        self.addItem(name)
+    def getListElems(self):
+        return self.entries
+
+    def addListEntry(self, name):
+        print('arg repr: {}'.format(name))
+        self.entries.append(ListEntry(name, self.entries_count))
+        self.entries_count += 1
+        self._updateList()
+
+    def removeListEntry(self, index):
+        del self.entries[index]
+        self.entries_count -= 1
+        self._updateList()
+
+    def _updateList(self):
+        print('update list called')
+        self.clear()
+        for e in self.entries:
+            self.addItem(e.name + '[{}]'.format(str(e.id)))
+
+    def dropEvent(self, dropEvent: QDropEvent):
+        print('overrided dropevent called')
 
 
 class InfoBox(QTextEdit):
