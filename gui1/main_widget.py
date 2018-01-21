@@ -1,13 +1,16 @@
-from PyQt5.QtCore import (pyqtSlot, Qt)
+from PyQt5.QtCore import (pyqtSlot, pyqtSignal, Qt)
 from PyQt5.QtWidgets import (QWidget, QMessageBox)
 
-from handler.TaskHandler import TasksHandler
 from gui1.widgets import DialogAlerter, DialogTimer
 from gui1.layouts import MainLayout
 from gui1.widgets import ListWidget, Tools, InfoBox
 
 
 class MainWidget(QWidget):
+    pushkwargsSig = pyqtSignal(tuple, dict)
+    removeactionSig = pyqtSignal(int)
+    checkboxSig = pyqtSignal(bool)
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle('unnamed')
@@ -18,12 +21,10 @@ class MainWidget(QWidget):
         self.toolsBox = Tools()
         self.infoBox = InfoBox()
         self.msgBox = QMessageBox()
-        self.taskHandlerThread = None
         self.lastTask = None
         self.lastDialogWindow = None
         self.initUI()
         self.initSignals()
-        self.initHandlerThread()
 
     def initUI(self):
         self.layout_.addWidget(self.toolsBox, 0, 0)
@@ -36,10 +37,6 @@ class MainWidget(QWidget):
         self.toolsBox.addActionButton.clicked.connect(self.onAddButtonClicked)
         self.toolsBox.removeActionButton.clicked.connect(self.onRemoveButtonClicked)
         self.toolsBox.checkbox.clicked.connect(self.onCheckBoxChange)
-
-    def initHandlerThread(self):
-        self.taskHandlerThread = TasksHandler(self)
-        self.taskHandlerThread.start()
 
     @pyqtSlot()
     def onAddButtonClicked(self):
@@ -55,26 +52,25 @@ class MainWidget(QWidget):
         self.lastDialogWindow = cls(self)
 
     def pushDialogKwargs(self, kwargs):
+        self.pushkwargsSig.emit(self.lastTask, kwargs)
         if 'ABORT' in kwargs:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
             return
-        self.taskHandlerThread.add_task(self.lastTask[0], kwargs)
         self.taskList.addListEntry(self.lastTask[1])
         if self.lastDialogWindow:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
 
-    @pyqtSlot()
     def onRemoveButtonClicked(self):
         index = self.taskList.currentRow()
-        self.taskHandlerThread.remove_task(index)
+        self.removeactionSig.emit(index)
         self.taskList.removeListEntry(index)
 
-    @pyqtSlot()
     def onCheckBoxChange(self):
         boxstate = self.toolsBox.checkbox.isChecked()
-        self.taskHandlerThread.isEnabled = boxstate
+        print(boxstate)
+        self.checkboxSig.emit(bool(boxstate))
 
     @pyqtSlot(str)
     def showMessageBox(self, text):

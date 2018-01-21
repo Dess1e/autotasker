@@ -81,7 +81,6 @@ class ListWidget(QListWidget):
         return self.entries
 
     def addListEntry(self, name):
-        print('arg repr: {}'.format(name))
         self.entries.append(ListEntry(name, self.entries_count))
         self.entries_count += 1
         self._updateList()
@@ -92,7 +91,6 @@ class ListWidget(QListWidget):
         self._updateList()
 
     def _updateList(self):
-        print('update list called')
         self.clear()
         for e in self.entries:
             self.addItem(e.name + '[{}]'.format(str(e.id)))
