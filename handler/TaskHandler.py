@@ -26,6 +26,10 @@ class TasksHandler(QThread):
     def run(self):
         self.mainloop()
 
+    def swaptasks(self, index1, index2):
+        if not self.isEnabled:
+            self.tasks[index1], self.tasks[index2] = self.tasks[index2], self.tasks[index1]
+
     def mainloop(self):
         while True:
             tasks = self.tasks

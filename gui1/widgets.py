@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QDropEvent
 from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton, QGridLayout, QBoxLayout, QPushButton,
                              QTextEdit, QLineEdit, QCheckBox)
+from PyQt5.QtCore import pyqtSignal
 
 
 class DialogWidget(QWidget):
@@ -65,8 +66,13 @@ class ListEntry:
     def __lt__(self, other):
         return self.id < other.id
 
+    def __repr__(self):
+        return '<ListEntry #{} ({})>'.format(self.id, self.name)
+
 
 class ListWidget(QListWidget):
+    dropeventSig = pyqtSignal(tuple)
+
     def __init__(self):
         super().__init__()
         self.initList()
@@ -76,9 +82,17 @@ class ListWidget(QListWidget):
     def initList(self):
         from PyQt5.QtWidgets import QAbstractItemView
         self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setDragDropOverwriteMode(False)
+        self.setDragEnabled(True)
 
-    def getListElems(self):
+    def getEntries(self):
         return self.entries
+
+    def _getListElems(self) -> list:
+        lst = []
+        for i in range(self.count()):
+            lst.append(self.item(i))
+        return lst
 
     def addListEntry(self, name):
         self.entries.append(ListEntry(name, self.entries_count))
@@ -95,8 +109,25 @@ class ListWidget(QListWidget):
         for e in self.entries:
             self.addItem(e.name + '[{}]'.format(str(e.id)))
 
+    def _diff(self, lst_before, lst_after):
+        for index, elem in enumerate(lst_before):
+            if lst_after[index] != elem:
+                return index, lst_after.index(lst_before[index])
+        else:
+            return None
+
     def dropEvent(self, dropEvent: QDropEvent):
-        print('overrided dropevent called')
+        super().dropEvent(dropEvent)
+        lst_new = [int(entry.text()[-2:-1]) for entry in self._getListElems()]
+        lst_old = [entry.id for entry in self.entries]
+        diff_tup = self._diff(lst_old, lst_new)
+
+        if diff_tup:
+            st, nd = diff_tup
+            self.entries[st], self.entries[nd] = self.entries[nd], self.entries[st]
+
+        print(lst_old, lst_new, diff_tup)
+        self.dropeventSig.emit(diff_tup)
 
 
 class InfoBox(QTextEdit):
