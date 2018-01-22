@@ -3,10 +3,6 @@ from time import time
 import pyautogui
 
 
-def trap_exception(*args):
-    print(args)
-
-
 class TaskHandlerThread(QThread):
     def __init__(self, guiRef):
         super().__init__()
@@ -40,7 +36,7 @@ class TasksHandler(QObject):
 
     def getTask(self, uid):
         if uid in self.tasks:
-            return self.tasks['uid']
+            return self.tasks[uid]
         else:
             return None
 

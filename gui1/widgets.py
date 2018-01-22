@@ -1,7 +1,8 @@
 from PyQt5.QtGui import QDropEvent
 from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton, QGridLayout, QBoxLayout, QPushButton,
                              QTextEdit, QLineEdit, QCheckBox)
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from helpers.helpers import DescriptionMap
 
 
 class DialogWidget(QWidget):
@@ -93,6 +94,8 @@ class ListEntry:
 
 
 class ListWidget(QListWidget):
+    requestInfoUpdateSig = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         self.initList()
@@ -131,6 +134,13 @@ class ListWidget(QListWidget):
             self._updateList()
             self.taskhandler_ref.remove_task(curr_id)
 
+    def getCurrElemUid(self):
+        elem = self.currentItem()
+        if elem:
+            return elem.text()[-7:-1]
+        else:
+            return None
+
     def _updateList(self):
         self.clear()
         order = self.order
@@ -148,18 +158,24 @@ class ListWidget(QListWidget):
         self.taskhandler_ref.reorder(order)
 
     def onEntryClick(self):
-        print('click!')
+        self.requestInfoUpdateSig.emit(self.getCurrElemUid())
 
 
 class InfoBox(QTextEdit):
     def __init__(self):
         super().__init__()
         self.taskhandler_ref = None
+        self.desc_map = DescriptionMap()
         self.init()
 
     def init(self):
         self.setText("Info will be displayed here...")
         self.setReadOnly(True)
+
+    @pyqtSlot(str)
+    def updateInfo(self, uid):
+        d = self.desc_map.createDescription(self.taskhandler_ref.getTask(uid), uid)
+        self.setText(d)
 
 
 class Tools(QWidget):

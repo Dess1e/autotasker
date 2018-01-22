@@ -8,8 +8,6 @@ from helpers.helpers import randomId
 
 
 class MainWidget(QWidget):
-    pushkwargsSig = pyqtSignal(tuple, str, dict)
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle('unnamed')

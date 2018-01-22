@@ -1,7 +1,7 @@
 from gui1.main_widget import MainWidget
 from PyQt5.QtWidgets import QApplication
 from handler.TaskHandler import TaskHandlerThread
-from PyQt5.QtCore import pyqtSlot, QT_VERSION, qFatal
+from PyQt5.QtCore import QT_VERSION, qFatal
 import sys, traceback
 
 
@@ -26,7 +26,7 @@ class Application(QApplication):
         self.gui.taskhandler_ref = self.taskhandler
 
     def initSignals(self):
-        ...
+        self.gui.taskList.requestInfoUpdateSig.connect(self.gui.infoBox.updateInfo)
 
 if __name__ == '__main__':
     if QT_VERSION >= 0x50501:
