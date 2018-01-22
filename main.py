@@ -1,6 +1,6 @@
 from gui1.main_widget import MainWidget
 from PyQt5.QtWidgets import QApplication
-from handler.TaskHandler import TasksHandler
+from handler.TaskHandler import TaskHandlerThread
 from PyQt5.QtCore import pyqtSlot, QT_VERSION, qFatal
 import sys, traceback
 
@@ -10,34 +10,23 @@ class Application(QApplication):
         super().__init__(args)
         self.gui = MainWidget()
         self.taskhandler = None
+        self.taskhandler_thr = None
         self.initSignals()
         self.initTaskHandler()
+        self.passTaskHandlerRef()
 
     def initTaskHandler(self):
-        self.taskhandler = TasksHandler(self.gui)
-        self.taskhandler.start()
+        self.taskhandler_thr = TaskHandlerThread(self.gui)
+        self.taskhandler_thr.start()
+        self.taskhandler = self.taskhandler_thr.taskhandler
+
+    def passTaskHandlerRef(self):
+        self.gui.taskList.taskhandler_ref = self.taskhandler
+        self.gui.infoBox.taskhandler_ref = self.taskhandler
+        self.gui.taskhandler_ref = self.taskhandler
 
     def initSignals(self):
-        self.gui.pushkwargsSig.connect(self.pushArgsFromDialog)
-        self.gui.taskList.removeactionSig.connect(self.removeAction)
-        self.gui.checkboxSig.connect(self.toggleHandler)
-        self.gui.taskList.dropeventSig.connect(self.listReorder)
-
-    @pyqtSlot(tuple, str, dict)
-    def pushArgsFromDialog(self, lastTask, uid, kwargs):
-        self.taskhandler.add_task(lastTask[0], uid, kwargs)
-
-    @pyqtSlot(str)
-    def removeAction(self, uid):
-        self.taskhandler.remove_task(uid)
-
-    @pyqtSlot(bool)
-    def toggleHandler(self, state):
-        self.taskhandler.isEnabled = state
-
-    @pyqtSlot(list)
-    def listReorder(self, order):
-        self.taskhandler.reorder(order)
+        ...
 
 if __name__ == '__main__':
     if QT_VERSION >= 0x50501:

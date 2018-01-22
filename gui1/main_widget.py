@@ -1,7 +1,7 @@
 from PyQt5.QtCore import (pyqtSlot, pyqtSignal, Qt)
 from PyQt5.QtWidgets import (QWidget, QMessageBox)
 
-from gui1.widgets import DialogAlerter, DialogTimer
+from gui1.widgets import DialogAlerter, DialogTimer, DialogClicker
 from gui1.layouts import MainLayout
 from gui1.widgets import ListWidget, Tools, InfoBox
 from helpers.helpers import randomId
@@ -9,12 +9,11 @@ from helpers.helpers import randomId
 
 class MainWidget(QWidget):
     pushkwargsSig = pyqtSignal(tuple, str, dict)
-    checkboxSig = pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle('unnamed')
-        self.TaskWidgetMap = {1: DialogAlerter, 2: DialogTimer}
+        self.TaskWidgetMap = {1: DialogAlerter, 2: DialogTimer, 3: DialogClicker}
         self.layout_ = MainLayout()
         self.setLayout(self.layout_)
         self.taskList = ListWidget()
@@ -25,6 +24,7 @@ class MainWidget(QWidget):
         self.lastDialogWindow = None
         self.initUI()
         self.initSignals()
+        self.taskhandler_ref = None
 
     def initUI(self):
         self.layout_.addWidget(self.toolsBox, 0, 0)
@@ -61,7 +61,7 @@ class MainWidget(QWidget):
             newId = randomId(6)
             if newId not in entries:
                 break
-        self.pushkwargsSig.emit(self.lastTask, newId, kwargs)
+        self.taskhandler_ref.add_task(self.lastTask[0], newId, kwargs)
         self.taskList.addListEntry(self.lastTask[1], newId)
         if self.lastDialogWindow:
             self.lastDialogWindow.close()
@@ -73,7 +73,7 @@ class MainWidget(QWidget):
     def onCheckBoxChange(self):
         boxstate = self.toolsBox.checkbox.isChecked()
         print(boxstate)
-        self.checkboxSig.emit(bool(boxstate))
+        self.taskhandler_ref.isEnabled = bool(boxstate)
 
     @pyqtSlot(str)
     def showMessageBox(self, text):

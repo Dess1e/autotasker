@@ -7,7 +7,16 @@ def trap_exception(*args):
     print(args)
 
 
-class TasksHandler(QThread):
+class TaskHandlerThread(QThread):
+    def __init__(self, guiRef):
+        super().__init__()
+        self.taskhandler = TasksHandler(guiRef)
+
+    def run(self):
+        self.taskhandler.mainloop()
+
+
+class TasksHandler(QObject):
     def __init__(self, guiRef):
         super().__init__()
         self.guiRef = guiRef
@@ -29,8 +38,11 @@ class TasksHandler(QThread):
     def reorder(self, new_order):
         self.order = new_order
 
-    def run(self):
-        self.mainloop()
+    def getTask(self, uid):
+        if uid in self.tasks:
+            return self.tasks['uid']
+        else:
+            return None
 
     def mainloop(self):
         while True:

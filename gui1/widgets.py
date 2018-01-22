@@ -24,8 +24,9 @@ class DialogTimer(DialogWidget):
         self.setLayout(QGridLayout())
         self.timeLine = QLineEdit(self)
         self.setWindowTitle('Select timer properties')
-        self.layout().addWidget(self.timeLine, 0, 0)
+        self.layout().addWidget(self.timeLine, 0, 0, 1, 2)
         self.layout().addWidget(self.doneButton, 1, 0)
+        self.layout().addWidget(self.cancelButton, 1, 1)
         f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
         f_c = lambda: self.parent.pushDialogKwargs({'ABORT': None})
         self.doneButton.clicked.connect(f)
@@ -44,8 +45,9 @@ class DialogAlerter(DialogWidget):
         self.setLayout(QGridLayout())
         self.textLine = QLineEdit(self)
         self.setWindowTitle('Select alert message properties')
-        self.layout().addWidget(self.textLine, 0, 0)
+        self.layout().addWidget(self.textLine, 0, 0, 1, 2)
         self.layout().addWidget(self.doneButton, 1, 0)
+        self.layout().addWidget(self.cancelButton, 1, 1)
         f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
         f_c = lambda: self.parent.pushDialogKwargs({'ABORT': None})
         self.doneButton.clicked.connect(f)
@@ -54,6 +56,29 @@ class DialogAlerter(DialogWidget):
 
     def makeKwargs(self):
         kwargs = {'text': self.textLine.text()}
+        return kwargs
+
+
+class DialogClicker(DialogWidget):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.setLayout(QGridLayout())
+        self.xline = QLineEdit(self)
+        self.yline = QLineEdit(self)
+        self.setWindowTitle('Select clicker properies')
+        self.layout().addWidget(self.xline, 0, 0)
+        self.layout().addWidget(self.yline, 0, 1)
+        self.layout().addWidget(self.doneButton, 1, 0)
+        self.layout().addWidget(self.cancelButton, 1, 1)
+        f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
+        f_c = lambda: self.parent.pushDialogKwargs({'ABORT': None})
+        self.doneButton.clicked.connect(f)
+        self.cancelButton.clicked.connect(f_c)
+        self.show()
+
+    def makeKwargs(self):
+        kwargs = {'x': self.xline.text(), 'y': self.yline.text()}
         return kwargs
 
 
@@ -68,20 +93,20 @@ class ListEntry:
 
 
 class ListWidget(QListWidget):
-    dropeventSig = pyqtSignal(list)
-    removeactionSig = pyqtSignal(str)
-
     def __init__(self):
         super().__init__()
         self.initList()
         self.entries = {}
         self.order = []
+        self.taskhandler_ref = None
 
     def initList(self):
         from PyQt5.QtWidgets import QAbstractItemView
         self.setDragDropMode(QAbstractItemView.InternalMove)
         self.setDragDropOverwriteMode(False)
         self.setDragEnabled(True)
+
+        self.currentRowChanged.connect(self.onEntryClick)
 
     def getEntries(self):
         return self.entries
@@ -104,6 +129,7 @@ class ListWidget(QListWidget):
             del self.entries[curr_id]
             self.order.remove(curr_id)
             self._updateList()
+            self.taskhandler_ref.remove_task(curr_id)
 
     def _updateList(self):
         self.clear()
@@ -119,12 +145,16 @@ class ListWidget(QListWidget):
     def dropEvent(self, dropEvent: QDropEvent):
         super().dropEvent(dropEvent)
         order = self.getUpdatedOrder()
-        self.dropeventSig.emit(order)
+        self.taskhandler_ref.reorder(order)
+
+    def onEntryClick(self):
+        print('click!')
 
 
 class InfoBox(QTextEdit):
     def __init__(self):
         super().__init__()
+        self.taskhandler_ref = None
         self.init()
 
     def init(self):
