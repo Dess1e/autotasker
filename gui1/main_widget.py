@@ -4,11 +4,11 @@ from PyQt5.QtWidgets import (QWidget, QMessageBox)
 from gui1.widgets import DialogAlerter, DialogTimer
 from gui1.layouts import MainLayout
 from gui1.widgets import ListWidget, Tools, InfoBox
+from helpers.helpers import randomId
 
 
 class MainWidget(QWidget):
-    pushkwargsSig = pyqtSignal(tuple, dict)
-    removeactionSig = pyqtSignal(int)
+    pushkwargsSig = pyqtSignal(tuple, str, dict)
     checkboxSig = pyqtSignal(bool)
 
     def __init__(self):
@@ -52,20 +52,23 @@ class MainWidget(QWidget):
         self.lastDialogWindow = cls(self)
 
     def pushDialogKwargs(self, kwargs):
-        self.pushkwargsSig.emit(self.lastTask, kwargs)
         if 'ABORT' in kwargs:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
             return
-        self.taskList.addListEntry(self.lastTask[1])
+        entries = self.taskList.getEntries()
+        while True:
+            newId = randomId(6)
+            if newId not in entries:
+                break
+        self.pushkwargsSig.emit(self.lastTask, newId, kwargs)
+        self.taskList.addListEntry(self.lastTask[1], newId)
         if self.lastDialogWindow:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
 
     def onRemoveButtonClicked(self):
-        index = self.taskList.currentRow()
-        self.removeactionSig.emit(index)
-        self.taskList.removeListEntry(index)
+        self.taskList.removeCurrentListEntry()
 
     def onCheckBoxChange(self):
         boxstate = self.toolsBox.checkbox.isChecked()

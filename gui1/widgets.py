@@ -58,26 +58,24 @@ class DialogAlerter(DialogWidget):
 
 
 class ListEntry:
-    def __init__(self, name, id):
+    def __init__(self, name, uniqueId):
         self.name = name
-        self.id = id
+        self.uid = uniqueId
         self.descr = ''''''
 
-    def __lt__(self, other):
-        return self.id < other.id
-
     def __repr__(self):
-        return '<ListEntry #{} ({})>'.format(self.id, self.name)
+        return '<ListEntry #{} ({})>'.format(self.uid, self.name)
 
 
 class ListWidget(QListWidget):
-    dropeventSig = pyqtSignal(tuple)
+    dropeventSig = pyqtSignal(list)
+    removeactionSig = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self.initList()
-        self.entries = []
-        self.entries_count = 0
+        self.entries = {}
+        self.order = []
 
     def initList(self):
         from PyQt5.QtWidgets import QAbstractItemView
@@ -94,40 +92,34 @@ class ListWidget(QListWidget):
             lst.append(self.item(i))
         return lst
 
-    def addListEntry(self, name):
-        self.entries.append(ListEntry(name, self.entries_count))
-        self.entries_count += 1
+    def addListEntry(self, name, uniqueId):
+        self.entries[uniqueId] = ListEntry(name, uniqueId)
+        self.order.append(uniqueId)
         self._updateList()
 
-    def removeListEntry(self, index):
-        del self.entries[index]
-        self.entries_count -= 1
-        self._updateList()
+    def removeCurrentListEntry(self):
+        selected_entry = self.currentItem()
+        if selected_entry:
+            curr_id = selected_entry.text()[-7:-1]
+            del self.entries[curr_id]
+            self.order.remove(curr_id)
+            self._updateList()
 
     def _updateList(self):
         self.clear()
-        for e in self.entries:
-            self.addItem(e.name + '[{}]'.format(str(e.id)))
+        order = self.order
+        for uid in order:
+            curr = self.entries[uid]
+            self.addItem(curr.name + '[{}]'.format(str(curr.uid)))
 
-    def _diff(self, lst_before, lst_after):
-        for index, elem in enumerate(lst_before):
-            if lst_after[index] != elem:
-                return index, lst_after.index(lst_before[index])
-        else:
-            return None
+    def getUpdatedOrder(self) -> list:
+        order = [e.text()[-7:-1] for e in self._getListElems()]
+        return order
 
     def dropEvent(self, dropEvent: QDropEvent):
         super().dropEvent(dropEvent)
-        lst_new = [int(entry.text()[-2:-1]) for entry in self._getListElems()]
-        lst_old = [entry.id for entry in self.entries]
-        diff_tup = self._diff(lst_old, lst_new)
-
-        if diff_tup:
-            st, nd = diff_tup
-            self.entries[st], self.entries[nd] = self.entries[nd], self.entries[st]
-
-        print(lst_old, lst_new, diff_tup)
-        self.dropeventSig.emit(diff_tup)
+        order = self.getUpdatedOrder()
+        self.dropeventSig.emit(order)
 
 
 class InfoBox(QTextEdit):

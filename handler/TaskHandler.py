@@ -11,32 +11,34 @@ class TasksHandler(QThread):
     def __init__(self, guiRef):
         super().__init__()
         self.guiRef = guiRef
-        self.tasks = []
+        self.tasks = {}
+        self.order = []
         self.isEnabled = False
         self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker}
 
-    def add_task(self, taskId, kwargs):
+    def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
         newTask = cls(self.guiRef, kwargs)
-        self.tasks.append(newTask)
+        self.tasks[uid] = newTask
+        self.order.append(uid)
 
-    def remove_task(self, index):
-        del self.tasks[index]
+    def remove_task(self, uid):
+        del self.tasks[uid]
+        self.order.remove(uid)
+
+    def reorder(self, new_order):
+        self.order = new_order
 
     def run(self):
         self.mainloop()
-
-    def swaptasks(self, index1, index2):
-        if not self.isEnabled:
-            self.tasks[index1], self.tasks[index2] = self.tasks[index2], self.tasks[index1]
 
     def mainloop(self):
         while True:
             tasks = self.tasks
             if len(tasks) and self.isEnabled:
                 print(self.tasks)
-                for each in tasks:
-                    each.perform()
+                for each in self.order:
+                    self.tasks[each].perform()
 
 
 class Task(QObject):

@@ -19,32 +19,32 @@ class Application(QApplication):
 
     def initSignals(self):
         self.gui.pushkwargsSig.connect(self.pushArgsFromDialog)
-        self.gui.removeactionSig.connect(self.removeAction)
+        self.gui.taskList.removeactionSig.connect(self.removeAction)
         self.gui.checkboxSig.connect(self.toggleHandler)
         self.gui.taskList.dropeventSig.connect(self.listReorder)
 
-    @pyqtSlot(tuple, dict)
-    def pushArgsFromDialog(self, lastTask, kwargs):
-        self.taskhandler.add_task(lastTask[0], kwargs)
+    @pyqtSlot(tuple, str, dict)
+    def pushArgsFromDialog(self, lastTask, uid, kwargs):
+        self.taskhandler.add_task(lastTask[0], uid, kwargs)
 
-    @pyqtSlot(int)
-    def removeAction(self, index):
-        self.taskhandler.remove_task(index)
+    @pyqtSlot(str)
+    def removeAction(self, uid):
+        self.taskhandler.remove_task(uid)
 
     @pyqtSlot(bool)
     def toggleHandler(self, state):
         self.taskhandler.isEnabled = state
 
-    @pyqtSlot(tuple)
-    def listReorder(self, indexes):
-        print('indexes from main: {}'.format(indexes))
+    @pyqtSlot(list)
+    def listReorder(self, order):
+        self.taskhandler.reorder(order)
 
 if __name__ == '__main__':
     if QT_VERSION >= 0x50501:
         def excepthook(type_, value, traceback_):
             traceback.print_exception(type_, value, traceback_)
             qFatal('')
-    sys.excepthook = excepthook
+        sys.excepthook = excepthook
 
     app = Application(sys.argv)
     sys.exit(app.exec_())
