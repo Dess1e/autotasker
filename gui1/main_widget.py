@@ -1,7 +1,7 @@
 from PyQt5.QtCore import (pyqtSlot, pyqtSignal, Qt)
 from PyQt5.QtWidgets import (QWidget, QMessageBox)
 
-from gui1.widgets import DialogAlerter, DialogTimer, DialogClicker
+from gui1.dialogs import DialogAlerter, DialogTimer, DialogClicker, DialogFindAndClick
 from gui1.layouts import MainLayout
 from gui1.widgets import ListWidget, Tools, InfoBox
 from helpers.helpers import randomId
@@ -11,7 +11,8 @@ class MainWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('unnamed')
-        self.TaskWidgetMap = {1: DialogAlerter, 2: DialogTimer, 3: DialogClicker}
+        self.TaskWidgetMap = {1: DialogAlerter, 2: DialogTimer, 3: DialogClicker,
+                              4: DialogFindAndClick}
         self.layout_ = MainLayout()
         self.setLayout(self.layout_)
         self.taskList = ListWidget()
@@ -47,10 +48,10 @@ class MainWidget(QWidget):
 
     def startDialogWidget(self, taskId):
         cls = self.TaskWidgetMap[taskId]
-        self.lastDialogWindow = cls(self)
+        self.lastDialogWindow = cls(parent=self)
 
     def pushDialogKwargs(self, kwargs):
-        if 'ABORT' in kwargs:
+        if not kwargs:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
             return

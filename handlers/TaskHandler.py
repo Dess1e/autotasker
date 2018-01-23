@@ -1,5 +1,6 @@
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
 from time import time
+from handlers import cv2handler as cv2
 import pyautogui
 
 
@@ -19,7 +20,7 @@ class TasksHandler(QObject):
         self.tasks = {}
         self.order = []
         self.isEnabled = False
-        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker}
+        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick}
 
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
@@ -44,7 +45,6 @@ class TasksHandler(QObject):
         while True:
             tasks = self.tasks
             if len(tasks) and self.isEnabled:
-                print(self.tasks)
                 for each in self.order:
                     self.tasks[each].perform()
 
@@ -52,6 +52,8 @@ class TasksHandler(QObject):
 class Task(QObject):
     def __init__(self, guiRef, kwargs):
         super().__init__()
+        self.guiRef = guiRef
+        self.kwargs = kwargs
         self.taskInfo = ''''''
         self.guiRef = guiRef
         self.kwargs = kwargs
@@ -63,7 +65,6 @@ class Task(QObject):
 class Timer(Task):
     def __init__(self, guiRef, kwargs):
         super().__init__(guiRef, kwargs)
-        print(kwargs)
         self.sleep_time = kwargs['time']
 
     def perform(self):
@@ -95,3 +96,30 @@ class Alerter(Task):
 
     def showMsgBox(self, text):
         self.calledPerform.emit(text)
+
+
+class FindAndClick(Task):
+    def __init__(self, guiRef, kwargs):
+        super().__init__(guiRef, kwargs)
+        self.imgPath = kwargs['path']
+        self.isContinious = kwargs['continueIfNotFound']
+        self.imgData = cv2.readImage(self.imgPath)
+
+    def perform(self):
+        screenshot = cv2.makeScreenshot()
+        if self.isContinious:
+            coords = cv2.matchAndGetCoords(self.imgData, screenshot)
+            if coords:
+                pyautogui.click(coords[0], coords[1])
+                print('found clicking')
+            else:
+                print('not found exiting')
+                return
+        else:
+            while True:
+                coords = cv2.matchAndGetCoords(self.imgData, screenshot)
+                if coords:
+                    pyautogui.click(coords[0], coords[1])
+                    print('found clicking exiting [loop]')
+                    return
+                print('not found still searching[loop]')

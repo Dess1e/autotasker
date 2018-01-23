@@ -5,84 +5,6 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from helpers.helpers import DescriptionMap
 
 
-class DialogWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.doneButton = QPushButton(self)
-        self.cancelButton = QPushButton(self)
-        self.setGeometry(300, 300, 300, 300)
-        self.init()
-
-    def init(self):
-        self.doneButton.setText('Done')
-        self.cancelButton.setText('Cancel')
-
-
-class DialogTimer(DialogWidget):
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-        self.setLayout(QGridLayout())
-        self.timeLine = QLineEdit(self)
-        self.setWindowTitle('Select timer properties')
-        self.layout().addWidget(self.timeLine, 0, 0, 1, 2)
-        self.layout().addWidget(self.doneButton, 1, 0)
-        self.layout().addWidget(self.cancelButton, 1, 1)
-        f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
-        f_c = lambda: self.parent.pushDialogKwargs({'ABORT': None})
-        self.doneButton.clicked.connect(f)
-        self.cancelButton.clicked.connect(f_c)
-        self.show()
-
-    def makeKwargs(self):
-        kwargs = {'time': self.timeLine.text()}
-        return kwargs
-
-
-class DialogAlerter(DialogWidget):
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-        self.setLayout(QGridLayout())
-        self.textLine = QLineEdit(self)
-        self.setWindowTitle('Select alert message properties')
-        self.layout().addWidget(self.textLine, 0, 0, 1, 2)
-        self.layout().addWidget(self.doneButton, 1, 0)
-        self.layout().addWidget(self.cancelButton, 1, 1)
-        f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
-        f_c = lambda: self.parent.pushDialogKwargs({'ABORT': None})
-        self.doneButton.clicked.connect(f)
-        self.cancelButton.clicked.connect(f_c)
-        self.show()
-
-    def makeKwargs(self):
-        kwargs = {'text': self.textLine.text()}
-        return kwargs
-
-
-class DialogClicker(DialogWidget):
-    def __init__(self, parent):
-        super().__init__()
-        self.parent = parent
-        self.setLayout(QGridLayout())
-        self.xline = QLineEdit(self)
-        self.yline = QLineEdit(self)
-        self.setWindowTitle('Select clicker properies')
-        self.layout().addWidget(self.xline, 0, 0)
-        self.layout().addWidget(self.yline, 0, 1)
-        self.layout().addWidget(self.doneButton, 1, 0)
-        self.layout().addWidget(self.cancelButton, 1, 1)
-        f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
-        f_c = lambda: self.parent.pushDialogKwargs({'ABORT': None})
-        self.doneButton.clicked.connect(f)
-        self.cancelButton.clicked.connect(f_c)
-        self.show()
-
-    def makeKwargs(self):
-        kwargs = {'x': self.xline.text(), 'y': self.yline.text()}
-        return kwargs
-
-
 class ListEntry:
     def __init__(self, name, uniqueId):
         self.name = name
@@ -166,16 +88,20 @@ class InfoBox(QTextEdit):
         super().__init__()
         self.taskhandler_ref = None
         self.desc_map = DescriptionMap()
+        self.default_text = 'Click task to show info...'
         self.init()
 
     def init(self):
-        self.setText("Info will be displayed here...")
+        self.setText(self.default_text)
         self.setReadOnly(True)
 
     @pyqtSlot(str)
     def updateInfo(self, uid):
         d = self.desc_map.createDescription(self.taskhandler_ref.getTask(uid), uid)
-        self.setText(d)
+        if d:
+            self.setText(d)
+        else:
+            self.setText(self.default_text)
 
 
 class Tools(QWidget):
@@ -205,6 +131,7 @@ class ToolsCombobox(QComboBox):
         self.addItem('Alert message')
         self.addItem('Timer / Sleep')
         self.addItem('Click at coords')
+        self.addItem('Find and click')
 
     def getSelectedData(self):
         return self.currentIndex(), self.currentText()

@@ -1,6 +1,6 @@
 from gui1.main_widget import MainWidget
 from PyQt5.QtWidgets import QApplication
-from handler.TaskHandler import TaskHandlerThread
+from handlers.TaskHandler import TaskHandlerThread
 from PyQt5.QtCore import QT_VERSION, qFatal
 import sys, traceback
 

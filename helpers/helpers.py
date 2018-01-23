@@ -1,5 +1,5 @@
 from random import randrange
-from handler.TaskHandler import Timer, Clicker, Alerter
+from handlers.TaskHandler import Timer, Clicker, Alerter
 
 
 def randomId(length):
@@ -34,7 +34,7 @@ class DescriptionMap:
     def createDescription(self, task, uid) -> str:
         # TODO remove hardcoded jumptable and use getattr()
         task_type = type(task)
-        if not isinstance(None, task_type):
+        if task_type in self.map:
             descr = self.map[task_type]
         else:
             return None
