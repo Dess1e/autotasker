@@ -20,7 +20,7 @@ class TasksHandler(QObject):
         self.tasks = {}
         self.order = []
         self.isEnabled = False
-        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick}
+        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick, 5: FindOnScreen}
 
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
@@ -106,8 +106,8 @@ class FindAndClick(Task):
         self.imgData = cv2.readImage(self.imgPath)
 
     def perform(self):
-        screenshot = cv2.makeScreenshot()
         if self.isContinious:
+            screenshot = cv2.makeScreenshot()
             coords = cv2.matchAndGetCoords(self.imgData, screenshot)
             if coords:
                 pyautogui.click(coords[0], coords[1])
@@ -117,9 +117,24 @@ class FindAndClick(Task):
                 return
         else:
             while True:
+                screenshot = cv2.makeScreenshot()
                 coords = cv2.matchAndGetCoords(self.imgData, screenshot)
                 if coords:
                     pyautogui.click(coords[0], coords[1])
                     print('found clicking exiting [loop]')
                     return
                 print('not found still searching[loop]')
+
+
+class FindOnScreen(Task):
+    def __init__(self, guiRef, kwargs):
+        super().__init__(guiRef, kwargs)
+        self.imgPath = kwargs['path']
+        self.imgData = cv2.readImage(self.imgPath)
+
+    def perform(self):
+        while True:
+            screenshot = cv2.makeScreenshot()
+            coords = cv2.matchAndGetCoords(self.imgData, screenshot)
+            if coords:
+                return

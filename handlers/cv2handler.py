@@ -3,7 +3,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mss import mss
 from numpy import array
-from PIL import Image
 
 
 def testMatching(img1, img2, minMatchThreshold=10):

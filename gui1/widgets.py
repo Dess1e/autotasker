@@ -132,6 +132,7 @@ class ToolsCombobox(QComboBox):
         self.addItem('Timer / Sleep')
         self.addItem('Click at coords')
         self.addItem('Find and click')
+        self.addItem('Find on screen')
 
     def getSelectedData(self):
         return self.currentIndex(), self.currentText()
