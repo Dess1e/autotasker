@@ -17,8 +17,12 @@ timeout /T 3
 echo:
 echo:
 pip install PyQt5
-pip install opencv-python
+pip uninstall opencv-python
+pip install opencv-contrib-python
 pip install numpy
+pip install mss
+pip install pyautogui
+pip install matplotlib
 GOTO pip_checked
 
 :py_okay
@@ -46,8 +50,12 @@ timeout /T 3
 echo:
 echo:
 %pippath% install PyQt5
-%pippath% install opencv-python
+%pippath% uninstall opencv-python
+%pippath% install opencv-contrib-python
 %pippath% install numpy
+%pippath% install mss
+%pippath% install pyautogui
+%pippath% install matplotlib
 GOTO pip_checked
 )
 

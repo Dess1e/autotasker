@@ -44,6 +44,7 @@ class DialogAlerter(DialogWidget):
         super().__init__(parent)
         self.setLayout(QGridLayout())
         self.textLine = QLineEdit(self)
+        self.textLine.setPlaceholderText('Insert alert message text...')
         self.setWindowTitle('Select alert message properties')
         self.layout().addWidget(self.textLine, 0, 0, 1, 2)
         self.layout().addWidget(self.doneButton, 1, 0)
@@ -54,6 +55,7 @@ class DialogAlerter(DialogWidget):
         kwargs = {'text': self.textLine.text()}
         return kwargs
 
+#20-15
 
 class DialogClicker(DialogWidget):
     def __init__(self, parent):
@@ -61,6 +63,8 @@ class DialogClicker(DialogWidget):
         self.setLayout(QGridLayout())
         self.xline = QLineEdit(self)
         self.yline = QLineEdit(self)
+        self.xline.setPlaceholderText('Insert x coord...')
+        self.yline.setPlaceholderText('Insert y coord...')
         self.setWindowTitle('Select clicker properies')
         self.layout().addWidget(self.xline, 0, 0)
         self.layout().addWidget(self.yline, 0, 1)
