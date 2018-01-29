@@ -1,7 +1,8 @@
 from PyQt5.QtCore import (pyqtSlot, pyqtSignal, Qt)
 from PyQt5.QtWidgets import (QWidget, QMessageBox)
 
-from gui1.dialogs import DialogAlerter, DialogTimer, DialogClicker, DialogFindAndClick, DialogFindOnScreen
+from gui1.dialogs import (DialogAlerter, DialogTimer, DialogClicker, DialogFindAndClick, DialogFindOnScreen,
+                            DialogPressKey, DialogHoldKey, DialogReleaseKey)
 from gui1.layouts import MainLayout
 from gui1.widgets import ListWidget, Tools, InfoBox
 from helpers.helpers import randomId
@@ -12,7 +13,8 @@ class MainWidget(QWidget):
         super().__init__()
         self.setWindowTitle('unnamed')
         self.TaskWidgetMap = {1: DialogAlerter, 2: DialogTimer, 3: DialogClicker,
-                              4: DialogFindAndClick, 5: DialogFindOnScreen}
+                              4: DialogFindAndClick, 5: DialogFindOnScreen, 6: DialogPressKey,
+                              7: DialogHoldKey, 8: DialogReleaseKey}
         self.layout_ = MainLayout()
         self.setLayout(self.layout_)
         self.taskList = ListWidget()

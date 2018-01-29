@@ -20,7 +20,8 @@ class TasksHandler(QObject):
         self.tasks = {}
         self.order = []
         self.isEnabled = False
-        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick, 5: FindOnScreen}
+        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick, 5: FindOnScreen,
+                        6: PressKeyOnce, 7: HoldKey, 8: ReleaseKey}
 
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
@@ -138,3 +139,30 @@ class FindOnScreen(Task):
             coords = cv2.matchAndGetCoords(self.imgData, screenshot)
             if coords:
                 return
+
+
+class PressKeyOnce(Task):
+    def __init__(self, guiRef, kwargs):
+        super().__init__(guiRef, kwargs)
+        self.key = kwargs['key']
+
+    def perform(self):
+        pyautogui.press(self.key)
+
+
+class HoldKey(Task):
+    def __init__(self, guiRef, kwargs):
+        super().__init__(guiRef, kwargs)
+        self.key = kwargs['key']
+
+    def perform(self):
+        pyautogui.keyDown(self.key)
+
+
+class ReleaseKey(Task):
+    def __init__(self, guiRef, kwargs):
+        super().__init__(guiRef, kwargs)
+        self.key = kwargs['key']
+
+    def perform(self):
+        pyautogui.keyUp(self.key)

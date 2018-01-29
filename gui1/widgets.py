@@ -68,7 +68,7 @@ class ListWidget(QListWidget):
         order = self.order
         for uid in order:
             curr = self.entries[uid]
-            self.addItem(curr.name + '[{}]'.format(str(curr.uid)))
+            self.addItem(curr.name + ' [{}]'.format(str(curr.uid)))
 
     def getUpdatedOrder(self) -> list:
         order = [e.text()[-7:-1] for e in self._getListElems()]
@@ -128,11 +128,15 @@ class ToolsCombobox(QComboBox):
 
     def initCombobox(self):
         self.addItem('Select action...')
+
         self.addItem('Alert message')
         self.addItem('Timer / Sleep')
         self.addItem('Click at coords')
-        self.addItem('Find and click')
-        self.addItem('Find on screen')
+        self.addItem('Find on screen and click')
+        self.addItem('Try to find on screen')
+        self.addItem('Press key once')
+        self.addItem('Hold key')
+        self.addItem('Release key')
 
     def getSelectedData(self):
         return self.currentIndex(), self.currentText()

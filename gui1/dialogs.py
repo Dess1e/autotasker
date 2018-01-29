@@ -55,7 +55,6 @@ class DialogAlerter(DialogWidget):
         kwargs = {'text': self.textLine.text()}
         return kwargs
 
-#20-15
 
 class DialogClicker(DialogWidget):
     def __init__(self, parent):
@@ -144,4 +143,69 @@ class DialogFindOnScreen(DialogWidget):
         else:
             return None
 
+
+class DialogPressKey(DialogWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setLayout(QGridLayout())
+        self.setWindowTitle('Select key to press')
+        self.key = QLineEdit()
+        self.key.setPlaceholderText('insert key here, ex. \'w\' or \'shift\'')
+        self.layout().addWidget(self.key, 0, 0, 1, 2)
+        self.layout().addWidget(self.doneButton, 1, 0)
+        self.layout().addWidget(self.cancelButton, 1, 1)
+        self.show()
+
+    def makeKwargs(self):
+        key = self.key.text()
+        kwargs = {'key': key}
+        from pyautogui import isValidKey
+        if isValidKey(key):
+            return kwargs
+        else:
+            return None
+
+
+class DialogHoldKey(DialogWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setLayout(QGridLayout())
+        self.setWindowTitle('Select key to hold')
+        self.key = QLineEdit()
+        self.key.setPlaceholderText('insert key here, ex. \'w\' or \'shift\'')
+        self.layout().addWidget(self.key, 0, 0, 1, 2)
+        self.layout().addWidget(self.doneButton, 1, 1)
+        self.layout().addWidget(self.cancelButton, 1, 2)
+        self.show()
+
+    def makeKwargs(self):
+        key = self.key.text()
+        kwargs = {'key': key}
+        from pyautogui import isValidKey
+        if isValidKey(key):
+            return kwargs
+        else:
+            return None
+
+
+class DialogReleaseKey(DialogWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setLayout(QGridLayout())
+        self.setWindowTitle('Select key to release')
+        self.key = QLineEdit()
+        self.key.setPlaceholderText('insert key here, ex. \'w\' or \'shift\'')
+        self.layout().addWidget(self.key, 0, 0, 1, 2)
+        self.layout().addWidget(self.doneButton, 1, 1)
+        self.layout().addWidget(self.cancelButton, 1, 2)
+        self.show()
+
+    def makeKwargs(self):
+        key = self.key.text()
+        kwargs = {'key': key}
+        from pyautogui import isValidKey
+        if isValidKey(key):
+            return kwargs
+        else:
+            return None
 
