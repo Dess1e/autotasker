@@ -50,7 +50,7 @@ class ListWidget(QListWidget):
 
     def removeCurrentListEntry(self):  # removes selected lst entry
         selected_entry = self.currentItem()
-        logging.debug("[ListWidget]: Deleting enty {}".format(selected_entry))
+        logging.debug(f"[ListWidget]: Deleting enty {selected_entry}")
         if selected_entry:
             curr_id = selected_entry.text()[-7:-1]  # format entry name to get entry id
             del self.entries[curr_id]
@@ -99,12 +99,10 @@ class InfoBox(QLabel):
     def updateInfo(self, uid):
         task = self.taskhandler_ref.getTask(uid)
         if task:  # check that task exists
-            logging.debug("[InfoBox]: Updating info for {}".format(task))
             description = task.getDescription()
             self.setText(description)
         else:
             self.setText(self.default_text)
-            logging.warning("[InfoBox]: Got wrong key {}".format(uid))
 
 
 class Tools(QWidget):

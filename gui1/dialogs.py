@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (QWidget, QPushButton, QGridLayout, QLineEdit,
                              QFileDialog, QLabel, QCheckBox)
 from PyQt5.QtCore import QDir
+import logging
 
 
 class DialogWidget(QWidget):
@@ -77,8 +78,13 @@ class DialogClicker(DialogWidget):
         self.show()
 
     def makeKwargs(self):
-        kwargs = {'x': self.xline.text(), 'y': self.yline.text()}
-        return kwargs
+        try:
+            x = int(self.xline.text())
+            y = int(self.xline.text())
+            return {'x': x, 'y': y}
+        except ValueError:
+            logging.warning("[DialogClicker]: Cant convert coords to ints.")
+            return None
 
 
 class DialogFindAndClick(DialogWidget):

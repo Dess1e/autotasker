@@ -27,7 +27,6 @@ class TaskHandler(QObject):
 
         self.guiRef = guiRef
         self.tasks = {}  # tasks are in map (uid: taskobj)
-        # self.order = []  # this is the map order (are py dicts ordered??)
         self.isEnabled = False  # enable switch
         self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick,
                         5: FindOnScreen, 6: PressKeyOnce, 7: HoldKey,
@@ -41,25 +40,25 @@ class TaskHandler(QObject):
         newTask.setID(uid)
         self.tasks[uid] = newTask
 
-        logging.debug("[TaskHandler]: Added new {} with id={}".format(newTask, uid))
-        logging.debug("[TaskHandler]: Internal stack dict:\n\t{}".format(self.tasks))
+        logging.debug(f"[TaskHandler]: Added new {newTask} with id={uid}")
+        logging.debug(f"[TaskHandler]: Internal stack dict:\n\t{self.tasks}")
 
     def remove_task(self, uid):
         task = self.tasks.pop(uid)
 
-        logging.debug("[TaskHandler]: Removed {} with id={}".format(task, uid))
-        logging.debug("[TaskHandler]: Internal stack dict:\n\t{}".format(self.tasks))
+        logging.debug(f"[TaskHandler]: Removed {task} with id={uid}")
+        logging.debug(f"[TaskHandler]: Internal stack dict:\n\t{self.tasks}")
 
     def reorder(self, new_order):
         logging.debug("[TaskHandler]: Reordering task list")
-        logging.debug("[TaskHandler]: List before:\n\t{}".format(self.tasks))
+        logging.debug(f"[TaskHandler]: List before:\n\t{self.tasks}")
 
         self.tasks = {uid: task for uid, task in zip(new_order, self.tasks.values())}
 
-        logging.debug("[TaskHandler]: List after:\n\t{}".format(self.tasks))
+        logging.debug(f"[TaskHandler]: List after:\n\t{self.tasks}")
 
     def getTask(self, uid: str):
-        logging.debug("[TaskHandler]: Getting task under id={}".format(uid))
+        logging.debug(f"[TaskHandler]: Getting task under id={uid}")
         try:
             return self.tasks[uid]
         except KeyError:
@@ -69,6 +68,8 @@ class TaskHandler(QObject):
         while True:
             if len(self.tasks) and self.isEnabled:
                 for task in self.tasks.values():
+                    if not self.isEnabled:
+                        break
                     task.perform()
 
 
