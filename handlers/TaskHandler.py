@@ -21,7 +21,7 @@ class TasksHandler(QObject):
         super().__init__()
         self.guiRef = guiRef
         self.tasks = {}  # tasks are in map (uid: taskobj)
-        self.order = []  # this is the map order (are py dicts ordered??)
+        # self.order = []  # this is the map order (are py dicts ordered??)
         self.isEnabled = False  # enable switch
         self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick,
                         5: FindOnScreen, 6: PressKeyOnce, 7: HoldKey,
@@ -32,14 +32,15 @@ class TasksHandler(QObject):
         newTask = cls(self.guiRef, kwargs)
         newTask.setID(uid)
         self.tasks[uid] = newTask
-        self.order.append(uid)
+        # self.order.append(uid)
 
     def remove_task(self, uid):
         del self.tasks[uid]
-        self.order.remove(uid)
+        # self.order.remove(uid)
 
     def reorder(self, new_order):
-        self.order = new_order
+        self.tasks = {uid: task for uid, task in zip(new_order, self.tasks.values())}
+        # self.order = new_order
 
     def getTask(self, uid):
         if uid in self.tasks:
@@ -49,10 +50,9 @@ class TasksHandler(QObject):
 
     def mainloop(self):
         while True:
-            tasks = self.tasks
-            if len(tasks) and self.isEnabled:
-                for each in self.order:
-                    self.tasks[each].perform()
+            if len(self.tasks) and self.isEnabled:
+                for task in self.tasks.values():
+                    task.perform()
 
 
 class Task(QObject):
