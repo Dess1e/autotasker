@@ -1,9 +1,7 @@
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDropEvent
 from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton,
-                             QGridLayout, QBoxLayout, QPushButton,
-                             QLabel, QLineEdit, QCheckBox)
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from helpers.helpers import DescriptionMap
+                             QBoxLayout, QLabel, QCheckBox)
 
 
 class ListEntry:
@@ -88,7 +86,7 @@ class InfoBox(QLabel):
     def __init__(self):
         super().__init__()
         self.taskhandler_ref = None
-        self.desc_map = DescriptionMap()
+        # self.desc_map = DescriptionMap()
         self.default_text = 'Click task to show info...'
         self.init()
 
@@ -97,11 +95,14 @@ class InfoBox(QLabel):
 
     @pyqtSlot(str)
     def updateInfo(self, uid):
-        d = self.desc_map.createDescription(self.taskhandler_ref.getTask(uid), uid)
-        if d:
-            self.setText(d)
-        else:
-            self.setText(self.default_text)
+        # d = self.desc_map.createDescription(self.taskhandler_ref.getTask(uid), uid)
+        # if d:
+        #     self.setText(d)
+        # else:
+        #     self.setText(self.default_text)
+        task = self.taskhandler_ref.getTask(uid)
+        description = task.getDescription()
+        self.setText(description)
 
 
 class Tools(QWidget):
