@@ -101,8 +101,11 @@ class InfoBox(QLabel):
         # else:
         #     self.setText(self.default_text)
         task = self.taskhandler_ref.getTask(uid)
-        description = task.getDescription()
-        self.setText(description)
+        if task:  # check that task exists
+            description = task.getDescription()
+            self.setText(description)
+        else:
+            self.setText(self.default_text)
 
 
 class Tools(QWidget):
