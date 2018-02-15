@@ -3,6 +3,7 @@ from time import time
 from handlers import cv2handler as cv2
 from abc import abstractmethod
 import pyautogui
+from abc import abstractmethod
 
 
 class TaskHandlerThread(QThread):
@@ -21,8 +22,9 @@ class TasksHandler(QObject):
         self.tasks = {}  # tasks are in map (uid: taskobj)
         self.order = []  # this is the map order (are py dicts ordered??)
         self.isEnabled = False  # enable switch
-        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick, 5: FindOnScreen,
-                        6: PressKeyOnce, 7: HoldKey, 8: ReleaseKey}  # same enum is present in main.py
+        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick,
+                        5: FindOnScreen, 6: PressKeyOnce, 7: HoldKey,
+                        8: ReleaseKey}  # same enum is present in main.py
 
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
