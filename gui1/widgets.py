@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QDropEvent
-from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton, QGridLayout, QBoxLayout, QPushButton,
-                             QTextEdit, QLineEdit, QCheckBox)
+from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton,
+                             QGridLayout, QBoxLayout, QPushButton,
+                             QLabel, QLineEdit, QCheckBox)
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from helpers.helpers import DescriptionMap
 
@@ -83,7 +84,7 @@ class ListWidget(QListWidget):
         self.requestInfoUpdateSig.emit(self.getCurrElemUid())
 
 
-class InfoBox(QTextEdit):
+class InfoBox(QLabel):
     def __init__(self):
         super().__init__()
         self.taskhandler_ref = None
@@ -93,7 +94,6 @@ class InfoBox(QTextEdit):
 
     def init(self):
         self.setText(self.default_text)
-        self.setReadOnly(True)
 
     @pyqtSlot(str)
     def updateInfo(self, uid):

@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QGridLayout, QLineEdit, QFileDialog, QLabel, QCheckBox
+from PyQt5.QtWidgets import (QWidget, QPushButton, QGridLayout, QLineEdit,
+                             QFileDialog, QLabel, QCheckBox)
 from PyQt5.QtCore import QDir
 
 
@@ -208,4 +209,3 @@ class DialogReleaseKey(DialogWidget):
             return kwargs
         else:
             return None
-

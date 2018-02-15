@@ -63,5 +63,6 @@ def readImage(imgPath):
     img = cv2.imread(imgPath, 0)
     return img
 
+
 if __name__ == '__main__':
     makeScreenshot()

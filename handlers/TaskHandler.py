@@ -2,6 +2,7 @@ from PyQt5.QtCore import pyqtSignal, QObject, QThread
 from time import time
 from handlers import cv2handler as cv2
 import pyautogui
+from abc import abstractmethod
 
 
 class TaskHandlerThread(QThread):
@@ -20,8 +21,9 @@ class TasksHandler(QObject):
         self.tasks = {}
         self.order = []
         self.isEnabled = False
-        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick, 5: FindOnScreen,
-                        6: PressKeyOnce, 7: HoldKey, 8: ReleaseKey}
+        self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick,
+                        5: FindOnScreen, 6: PressKeyOnce, 7: HoldKey,
+                        8: ReleaseKey}
 
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
@@ -59,6 +61,7 @@ class Task(QObject):
         self.guiRef = guiRef
         self.kwargs = kwargs
 
+    @abstractmethod
     def perform(self):
         pass
 
