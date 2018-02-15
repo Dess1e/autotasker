@@ -1,6 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, QObject, QThread
 from time import time
 from handlers import cv2handler as cv2
+from abc import abstractmethod
 import pyautogui
 
 
@@ -17,11 +18,11 @@ class TasksHandler(QObject):
     def __init__(self, guiRef):
         super().__init__()
         self.guiRef = guiRef
-        self.tasks = {}
-        self.order = []
-        self.isEnabled = False
+        self.tasks = {}  # tasks are in map (uid: taskobj)
+        self.order = []  # this is the map order (are py dicts ordered??)
+        self.isEnabled = False  # enable switch
         self.TaskMap = {1: Alerter, 2: Timer, 3: Clicker, 4: FindAndClick, 5: FindOnScreen,
-                        6: PressKeyOnce, 7: HoldKey, 8: ReleaseKey}
+                        6: PressKeyOnce, 7: HoldKey, 8: ReleaseKey}  # same enum is present in main.py
 
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
@@ -59,6 +60,7 @@ class Task(QObject):
         self.guiRef = guiRef
         self.kwargs = kwargs
 
+    @abstractmethod
     def perform(self):
         pass
 

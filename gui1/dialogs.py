@@ -3,14 +3,18 @@ from PyQt5.QtCore import QDir
 
 
 class DialogWidget(QWidget):
+    """
+    Base class for dialog widget which pops up when you
+    are creating a new task.
+    """
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
         self.doneButton = QPushButton(self)
         self.cancelButton = QPushButton(self)
         self.setGeometry(300, 300, 300, 300)
-        f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())
-        f_c = lambda: self.parent.pushDialogKwargs(None)
+        f = lambda: self.parent.pushDialogKwargs(self.makeKwargs())  # callable to connect to
+        f_c = lambda: self.parent.pushDialogKwargs(None)  # same
         self.doneButton.clicked.connect(f)
         self.cancelButton.clicked.connect(f_c)
         self.init()
@@ -174,8 +178,8 @@ class DialogHoldKey(DialogWidget):
         self.key = QLineEdit()
         self.key.setPlaceholderText('insert key here, ex. \'w\' or \'shift\'')
         self.layout().addWidget(self.key, 0, 0, 1, 2)
-        self.layout().addWidget(self.doneButton, 1, 1)
-        self.layout().addWidget(self.cancelButton, 1, 2)
+        self.layout().addWidget(self.doneButton, 1, 0)
+        self.layout().addWidget(self.cancelButton, 1, 1)
         self.show()
 
     def makeKwargs(self):
@@ -196,8 +200,8 @@ class DialogReleaseKey(DialogWidget):
         self.key = QLineEdit()
         self.key.setPlaceholderText('insert key here, ex. \'w\' or \'shift\'')
         self.layout().addWidget(self.key, 0, 0, 1, 2)
-        self.layout().addWidget(self.doneButton, 1, 1)
-        self.layout().addWidget(self.cancelButton, 1, 2)
+        self.layout().addWidget(self.doneButton, 1, 0)
+        self.layout().addWidget(self.cancelButton, 1, 1)
         self.show()
 
     def makeKwargs(self):

@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 from mss import mss
 from numpy import array
 
@@ -24,6 +23,9 @@ def testMatching(img1, img2, minMatchThreshold=10):
 
 
 def makeScreenshot():
+    """
+    Gets screenshot and returns numpy array of scalar values
+    """
     with mss() as sct:
         img = array(sct.grab(sct.monitors[0]))
         return img
@@ -60,7 +62,7 @@ def matchAndGetCoords(img1, img2, minMatchThreshold=10):
 
 
 def readImage(imgPath):
-    img = cv2.imread(imgPath, 0)
+    img = cv2.imread(imgPath.encode('utf-8'), 0)
     return img
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ class ListEntry:
         self.descr = ''''''
 
     def __repr__(self):
-        return '<ListEntry #{} ({})>'.format(self.uid, self.name)
+        return '<ListEntry #{} ({})>'.format(self.uid, self.name)  # the beautiful repr
 
 
 class ListWidget(QListWidget):
@@ -22,8 +22,8 @@ class ListWidget(QListWidget):
         super().__init__()
         self.initList()
         self.entries = {}
-        self.order = []
-        self.taskhandler_ref = None
+        self.order = []  # tasks order
+        self.taskhandler_ref = None  # task handler obj
 
     def initList(self):
         from PyQt5.QtWidgets import QAbstractItemView
@@ -31,12 +31,12 @@ class ListWidget(QListWidget):
         self.setDragDropOverwriteMode(False)
         self.setDragEnabled(True)
 
-        self.currentRowChanged.connect(self.onEntryClick)
+        self.currentRowChanged.connect(self.onEntryClick)  # signal to change infobox
 
     def getEntries(self):
         return self.entries
 
-    def _getListElems(self) -> list:
+    def _getListElems(self) -> list:  # priv function to get list of listview elems
         lst = []
         for i in range(self.count()):
             lst.append(self.item(i))
@@ -47,10 +47,10 @@ class ListWidget(QListWidget):
         self.order.append(uniqueId)
         self._updateList()
 
-    def removeCurrentListEntry(self):
+    def removeCurrentListEntry(self):  # removes selected lst entry
         selected_entry = self.currentItem()
         if selected_entry:
-            curr_id = selected_entry.text()[-7:-1]
+            curr_id = selected_entry.text()[-7:-1]  # format entry name to get entry id
             del self.entries[curr_id]
             self.order.remove(curr_id)
             self._updateList()

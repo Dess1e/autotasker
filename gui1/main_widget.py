@@ -1,17 +1,21 @@
 from PyQt5.QtCore import (pyqtSlot, pyqtSignal, Qt)
 from PyQt5.QtWidgets import (QWidget, QMessageBox)
 
-from gui1.dialogs import (DialogAlerter, DialogTimer, DialogClicker, DialogFindAndClick, DialogFindOnScreen,
-                            DialogPressKey, DialogHoldKey, DialogReleaseKey)
+from gui1.dialogs import (DialogAlerter, DialogTimer, DialogClicker, DialogFindAndClick,
+                          DialogFindOnScreen, DialogPressKey, DialogHoldKey, DialogReleaseKey)
 from gui1.layouts import MainLayout
 from gui1.widgets import ListWidget, Tools, InfoBox
 from helpers.helpers import randomId
 
 
 class MainWidget(QWidget):
+    """
+    Widget class for main window
+    """
     def __init__(self):
         super().__init__()
         self.setWindowTitle('unnamed')
+        # Some kind of enumeration to add tasks to TaskHandler by index
         self.TaskWidgetMap = {1: DialogAlerter, 2: DialogTimer, 3: DialogClicker,
                               4: DialogFindAndClick, 5: DialogFindOnScreen, 6: DialogPressKey,
                               7: DialogHoldKey, 8: DialogReleaseKey}
@@ -19,13 +23,13 @@ class MainWidget(QWidget):
         self.setLayout(self.layout_)
         self.taskList = ListWidget()
         self.toolsBox = Tools()
-        self.infoBox = InfoBox()
-        self.msgBox = QMessageBox()
+        self.infoBox = InfoBox()  # info about tasks
+        self.msgBox = QMessageBox()  # alert msg box
         self.lastTask = None
         self.lastDialogWindow = None
         self.initUI()
         self.initSignals()
-        self.taskhandler_ref = None
+        self.taskhandler_ref = None  # ptr to task handler obj
 
     def initUI(self):
         self.layout_.addWidget(self.toolsBox, 0, 0)
@@ -39,7 +43,6 @@ class MainWidget(QWidget):
         self.toolsBox.removeActionButton.clicked.connect(self.onRemoveButtonClicked)
         self.toolsBox.checkbox.clicked.connect(self.onCheckBoxChange)
 
-    @pyqtSlot()
     def onAddButtonClicked(self):
         comboData = self.toolsBox.toolsCombo.getSelectedData()
         taskId, taskName = comboData
@@ -49,10 +52,13 @@ class MainWidget(QWidget):
         self.startDialogWidget(taskId)
 
     def startDialogWidget(self, taskId):
-        cls = self.TaskWidgetMap[taskId]
+        cls = self.TaskWidgetMap[taskId]  # task class
         self.lastDialogWindow = cls(parent=self)
 
     def pushDialogKwargs(self, kwargs):
+        """
+        Gets data from dialog and adds tasks to task handler
+        """
         if not kwargs:
             self.lastDialogWindow.close()
             self.lastDialogWindow = None
@@ -78,6 +84,9 @@ class MainWidget(QWidget):
 
     @pyqtSlot(str)
     def showMessageBox(self, text):
+        """
+        Method to pop up msgbox (self.msgbox)
+        """
         self.msgBox.setText(text)
         self.msgBox.setWindowTitle('Alert')
         self.setWindowFlag(Qt.Window)
