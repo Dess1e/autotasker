@@ -53,7 +53,8 @@ class TaskHandler(QObject):
         logging.debug("[TaskHandler]: Reordering task list")
         logging.debug(f"[TaskHandler]: List before:\n\t{self.tasks}")
 
-        self.tasks = {uid: task for uid, task in zip(new_order, self.tasks.values())}
+        tasks = self.tasks.copy()
+        self.tasks = {uid: tasks[uid] for uid in new_order}
 
         logging.debug(f"[TaskHandler]: List after:\n\t{self.tasks}")
 
