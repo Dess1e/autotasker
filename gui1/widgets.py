@@ -1,8 +1,9 @@
+import logging
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDropEvent
 from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton,
                              QBoxLayout, QLabel, QCheckBox)
-from pip.utils import logging
 
 
 class ListEntry:
@@ -49,6 +50,7 @@ class ListWidget(QListWidget):
 
     def removeCurrentListEntry(self):  # removes selected lst entry
         selected_entry = self.currentItem()
+        logging.debug(f"[ListWidget]: Deleting enty {selected_entry}")
         if selected_entry:
             curr_id = selected_entry.text()[-7:-1]  # format entry name to get entry id
             del self.entries[curr_id]
@@ -95,8 +97,8 @@ class InfoBox(QLabel):
 
     @pyqtSlot(str)
     def updateInfo(self, uid):
-        logging.debug()
         task = self.taskhandler_ref.getTask(uid)
+        logging.debug(f"[InfoBox]: Updating info for {task}")
         description = task.getDescription()
         self.setText(description)
 
