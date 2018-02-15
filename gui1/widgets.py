@@ -1,3 +1,5 @@
+import logging
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QDropEvent
 from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton,
@@ -48,6 +50,7 @@ class ListWidget(QListWidget):
 
     def removeCurrentListEntry(self):  # removes selected lst entry
         selected_entry = self.currentItem()
+        logging.debug("[ListWidget]: Deleting enty {}".format(selected_entry))
         if selected_entry:
             curr_id = selected_entry.text()[-7:-1]  # format entry name to get entry id
             del self.entries[curr_id]
@@ -86,7 +89,6 @@ class InfoBox(QLabel):
     def __init__(self):
         super().__init__()
         self.taskhandler_ref = None
-        # self.desc_map = DescriptionMap()
         self.default_text = 'Click task to show info...'
         self.init()
 
@@ -95,17 +97,14 @@ class InfoBox(QLabel):
 
     @pyqtSlot(str)
     def updateInfo(self, uid):
-        # d = self.desc_map.createDescription(self.taskhandler_ref.getTask(uid), uid)
-        # if d:
-        #     self.setText(d)
-        # else:
-        #     self.setText(self.default_text)
         task = self.taskhandler_ref.getTask(uid)
         if task:  # check that task exists
+            logging.debug("[InfoBox]: Updating info for {}".format(task))
             description = task.getDescription()
             self.setText(description)
         else:
             self.setText(self.default_text)
+            logging.warning("[InfoBox]: Got wrong key {}".format(uid))
 
 
 class Tools(QWidget):

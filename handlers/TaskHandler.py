@@ -1,3 +1,4 @@
+import logging
 from abc import abstractmethod
 from time import time
 
@@ -6,19 +7,24 @@ from PyQt5.QtCore import pyqtSignal, QObject, QThread
 
 from handlers import cv2handler as cv2
 
+logging.basicConfig(format="%(filename)-10s [line:%(lineno)s] ::%(levelname)-8s:: %(message)s",
+                    level=logging.DEBUG)
+
 
 class TaskHandlerThread(QThread):
     def __init__(self, guiRef):
         super().__init__()
-        self.taskhandler = TasksHandler(guiRef)
+        self.taskhandler = TaskHandler(guiRef)
 
     def run(self):
         self.taskhandler.mainloop()
 
 
-class TasksHandler(QObject):
+class TaskHandler(QObject):
     def __init__(self, guiRef):
         super().__init__()
+        logging.debug("[TaskHandler]: Initializing...")
+
         self.guiRef = guiRef
         self.tasks = {}  # tasks are in map (uid: taskobj)
         # self.order = []  # this is the map order (are py dicts ordered??)
@@ -27,25 +33,36 @@ class TasksHandler(QObject):
                         5: FindOnScreen, 6: PressKeyOnce, 7: HoldKey,
                         8: ReleaseKey}  # same enum is present in main.py
 
+        logging.debug("[TaskHandler]: Initialized...")
+
     def add_task(self, taskId, uid, kwargs):
         cls = self.TaskMap[taskId]
         newTask = cls(self.guiRef, kwargs)
         newTask.setID(uid)
         self.tasks[uid] = newTask
-        # self.order.append(uid)
+
+        logging.debug("[TaskHandler]: Added new {} with id={}".format(newTask, uid))
+        logging.debug("[TaskHandler]: Internal stack dict:\n\t{}".format(self.tasks))
 
     def remove_task(self, uid):
-        del self.tasks[uid]
-        # self.order.remove(uid)
+        task = self.tasks.pop(uid)
+
+        logging.debug("[TaskHandler]: Removed {} with id={}".format(task, uid))
+        logging.debug("[TaskHandler]: Internal stack dict:\n\t{}".format(self.tasks))
 
     def reorder(self, new_order):
-        self.tasks = {uid: task for uid, task in zip(new_order, self.tasks.values())}
-        # self.order = new_order
+        logging.debug("[TaskHandler]: Reordering task list")
+        logging.debug("[TaskHandler]: List before:\n\t{}".format(self.tasks))
 
-    def getTask(self, uid):
-        if uid in self.tasks:
+        self.tasks = {uid: task for uid, task in zip(new_order, self.tasks.values())}
+
+        logging.debug("[TaskHandler]: List after:\n\t{}".format(self.tasks))
+
+    def getTask(self, uid: str):
+        logging.debug("[TaskHandler]: Getting task under id={}".format(uid))
+        try:
             return self.tasks[uid]
-        else:
+        except KeyError:
             return None
 
     def mainloop(self):
