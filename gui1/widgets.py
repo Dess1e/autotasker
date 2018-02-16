@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QDropEvent
-from PyQt5.QtWidgets import (QListWidget, QComboBox, QToolButton,
+from PyQt5.QtWidgets import (QListWidget, QToolButton,
                              QHBoxLayout)
 
 from gui1.dialogs import *
@@ -51,7 +51,7 @@ class ListWidget(QListWidget):
 
     def removeCurrentListEntry(self):  # removes selected lst entry
         selected_entry = self.currentItem()
-        logging.debug(f"[ListWidget]: Deleting enty {selected_entry}")
+        logging.debug(f"[ListWidget]: Deleting entry {selected_entry}")
         if selected_entry:
             curr_id = selected_entry.text()[-7:-1]  # format entry name to get entry id
             del self.entries[curr_id]
@@ -132,7 +132,8 @@ class Tools(QWidget):
         for actionName, action in self.actions.items():
             button = QToolButton(self)
             button.setText(actionName)
-            button.clicked.connect(lambda a=action: self.parent().addTask(*a))
+            button.clicked.connect(lambda en, action=action: self.parent().addTask(*action))
+            print(action)
             self.layout().addWidget(button)
 
         # self.layout().addWidget(self.addActionButton)
@@ -141,25 +142,25 @@ class Tools(QWidget):
         self.layout().addWidget(self.checkbox)
 
 
-class ToolsCombobox(QComboBox):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.initCombobox()
-
-    def initCombobox(self):
-        self.addItem('Select action...')
-
-        self.addItem('Alert message')
-        self.addItem('Timer / Sleep')
-        self.addItem('Click at coords')
-        self.addItem('Find on screen and click')
-        self.addItem('Try to find on screen')
-        self.addItem('Press key once')
-        self.addItem('Hold key')
-        self.addItem('Release key')
-
-    def getSelectedData(self):
-        return self.currentIndex(), self.currentText()
+# class ToolsCombobox(QComboBox):
+#     def __init__(self, parent):
+#         super().__init__(parent)
+#         self.initCombobox()
+#
+#     def initCombobox(self):
+#         self.addItem('Select action...')
+#
+#         self.addItem('Alert message')
+#         self.addItem('Timer / Sleep')
+#         self.addItem('Click at coords')
+#         self.addItem('Find on screen and click')
+#         self.addItem('Try to find on screen')
+#         self.addItem('Press key once')
+#         self.addItem('Hold key')
+#         self.addItem('Release key')
+#
+#     def getSelectedData(self):
+#         return self.currentIndex(), self.currentText()
 
 
 class CheckBox(QCheckBox):
