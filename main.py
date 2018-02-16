@@ -1,9 +1,15 @@
-from gui1.main_widget import MainWidget
-from PyQt5.QtWidgets import QApplication
-from handlers.TaskHandler import TaskHandlerThread
-from PyQt5.QtCore import QT_VERSION, qFatal
+import logging
 import sys
 import traceback
+
+from PyQt5.QtCore import QT_VERSION, qFatal
+from PyQt5.QtWidgets import QApplication
+
+from gui1.main_widget import MainWidget
+from handlers.TaskHandler import TaskHandlerThread
+
+logging.basicConfig(format="%(filename)-15s [line:%(lineno)s] ::%(levelname)-8s:: %(message)s",
+                    level=logging.DEBUG)
 
 
 class Application(QApplication):

@@ -7,9 +7,6 @@ from PyQt5.QtCore import pyqtSignal, QObject, QThread
 
 from handlers import cv2handler as cv2
 
-logging.basicConfig(format="%(filename)-10s [line:%(lineno)s] ::%(levelname)-8s:: %(message)s",
-                    level=logging.DEBUG)
-
 
 class TaskHandlerThread(QThread):
     def __init__(self, guiRef):

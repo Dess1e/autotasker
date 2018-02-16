@@ -109,12 +109,9 @@ class InfoBox(QLabel):
 class Tools(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        # self.parent = parent
-        self.setLayout(QHBoxLayout())
-        # self.addActionButton = QToolButton(self)
+        self.setLayout(QHBoxLayout(self))
         self.removeActionButton = QToolButton(self)
-        # self.toolsCombo = ToolsCombobox(self)
-        self.checkbox = CheckBox(self)
+        self.checkbox = QCheckBox(self)
         self.actions = {"Alert message": (Alerter, DialogAlerter),
                         "Timer / Sleep": (Timer, DialogTimer),
                         "Click at coords": (Clicker, DialogClicker),
@@ -126,47 +123,15 @@ class Tools(QWidget):
         self.init()
 
     def init(self):
-        # self.addActionButton.setText("Add Action")
+        self.setStyleSheet("background-color:white")
         self.removeActionButton.setText("Remove Action")
+        self.checkbox.setText("Enabled")
 
         for actionName, action in self.actions.items():
             button = QToolButton(self)
             button.setText(actionName)
             button.clicked.connect(lambda en, action=action: self.parent().addTask(*action))
-            print(action)
             self.layout().addWidget(button)
 
-        # self.layout().addWidget(self.addActionButton)
         self.layout().addWidget(self.removeActionButton)
-        # self.layout().addWidget(self.toolsCombo)
         self.layout().addWidget(self.checkbox)
-
-
-# class ToolsCombobox(QComboBox):
-#     def __init__(self, parent):
-#         super().__init__(parent)
-#         self.initCombobox()
-#
-#     def initCombobox(self):
-#         self.addItem('Select action...')
-#
-#         self.addItem('Alert message')
-#         self.addItem('Timer / Sleep')
-#         self.addItem('Click at coords')
-#         self.addItem('Find on screen and click')
-#         self.addItem('Try to find on screen')
-#         self.addItem('Press key once')
-#         self.addItem('Hold key')
-#         self.addItem('Release key')
-#
-#     def getSelectedData(self):
-#         return self.currentIndex(), self.currentText()
-
-
-class CheckBox(QCheckBox):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.initCheckBox()
-
-    def initCheckBox(self):
-        self.setText('Enable')
