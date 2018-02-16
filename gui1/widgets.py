@@ -1,9 +1,10 @@
-import logging
-
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QDropEvent
-from PyQt5.QtWidgets import (QWidget, QListWidget, QComboBox, QToolButton,
-                             QBoxLayout, QLabel, QCheckBox)
+from PyQt5.QtWidgets import (QListWidget, QComboBox, QToolButton,
+                             QHBoxLayout)
+
+from gui1.dialogs import *
+from handlers.TaskHandler import *
 
 
 class ListEntry:
@@ -106,19 +107,37 @@ class InfoBox(QLabel):
 
 
 class Tools(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setLayout(QBoxLayout(QBoxLayout.LeftToRight))
-        self.addActionButton = AddButton(self)
-        self.removeActionButton = RemoveButton(self)
-        self.toolsCombo = ToolsCombobox(self)
+    def __init__(self, parent):
+        super().__init__(parent)
+        # self.parent = parent
+        self.setLayout(QHBoxLayout())
+        # self.addActionButton = QToolButton(self)
+        self.removeActionButton = QToolButton(self)
+        # self.toolsCombo = ToolsCombobox(self)
         self.checkbox = CheckBox(self)
+        self.actions = {"Alert message": (Alerter, DialogAlerter),
+                        "Timer / Sleep": (Timer, DialogTimer),
+                        "Click at coords": (Clicker, DialogClicker),
+                        "Find on screen and click": (FindAndClick, DialogFindAndClick),
+                        "Try to find on screen": (FindOnScreen, DialogFindOnScreen),
+                        "Press key once": (PressKeyOnce, DialogPressKey),
+                        "Hold key": (HoldKey, DialogHoldKey),
+                        "Release key": (ReleaseKey, DialogReleaseKey)}
         self.init()
 
     def init(self):
-        self.layout().addWidget(self.addActionButton)
+        # self.addActionButton.setText("Add Action")
+        self.removeActionButton.setText("Remove Action")
+
+        for actionName, action in self.actions.items():
+            button = QToolButton(self)
+            button.setText(actionName)
+            button.clicked.connect(lambda a=action: self.parent().addTask(*a))
+            self.layout().addWidget(button)
+
+        # self.layout().addWidget(self.addActionButton)
         self.layout().addWidget(self.removeActionButton)
-        self.layout().addWidget(self.toolsCombo)
+        # self.layout().addWidget(self.toolsCombo)
         self.layout().addWidget(self.checkbox)
 
 
@@ -141,24 +160,6 @@ class ToolsCombobox(QComboBox):
 
     def getSelectedData(self):
         return self.currentIndex(), self.currentText()
-
-
-class AddButton(QToolButton):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.initButton()
-
-    def initButton(self):
-        self.setText('Add action')
-
-
-class RemoveButton(QToolButton):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.initButton()
-
-    def initButton(self):
-        self.setText('Remove action')
 
 
 class CheckBox(QCheckBox):

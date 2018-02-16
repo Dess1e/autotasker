@@ -34,9 +34,8 @@ class TaskHandler(QObject):
 
         logging.debug("[TaskHandler]: Initialized...")
 
-    def add_task(self, taskId, uid, kwargs):
-        cls = self.TaskMap[taskId]
-        newTask = cls(self.guiRef, kwargs)
+    def add_task(self, taskCls, uid, kwargs):
+        newTask = taskCls(self.guiRef, kwargs)
         newTask.setID(uid)
         self.tasks[uid] = newTask
 
